@@ -61,7 +61,6 @@ async function checkadminlogin(req, res, next) {
   }
 }
 
-// ok
 async function createUser(req, res, next) {
   const username = req.body?.username;
   const password = req.body?.password;
