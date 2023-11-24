@@ -36,7 +36,7 @@ async function getProductByName(name) {
 
 async function getAllProducts(page) {
   try {
-    const itemsPerPage = 10;
+    const itemsPerPage = 12;
     const offset = (page - 1) * itemsPerPage;
 
     const totalProducts = await knex("products")

@@ -18,6 +18,8 @@ async function oderProducts(usernameData, orderData, invoiceData) {
     await transaction("invoices").insert(invoiceData);
 
     console.log("pending oder", [[orderData, invoiceData]]);
+    await transaction.commit();
+
     return {
       orderData,
       invoiceData,

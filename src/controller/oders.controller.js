@@ -12,6 +12,7 @@ async function order(req, res, next) {
       productID: req.body.productID,
       quantity: req.body.quantity,
       unitPrice: req.body.unitPrice,
+      totalPrice: req.body.totalPrice,
     };
 
     const order = await oderService.oderProducts(
@@ -22,7 +23,7 @@ async function order(req, res, next) {
     return res.status(201).json(order);
   } catch (error) {
     console.log(error);
-    return next(new ApiError(500, "An error occurred while creating the user"));
+    return next(new ApiError(500, "An error occurred while creating the oder"));
   }
 }
 module.exports = {
