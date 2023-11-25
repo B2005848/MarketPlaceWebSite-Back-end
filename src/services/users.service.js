@@ -111,9 +111,15 @@ async function createUser(userData, userDetailsData, userRoleData) {
 async function getUserByUsername(username) {
   try {
     const user = await knex("users")
-      .select("users.*", "status.StatusName as StatusName", "userdetails.*")
+      .select(
+        "users.*",
+        "status.StatusName as StatusName",
+        "userdetails.*",
+        "userroles.RoleID as RoleID"
+      )
       .join("status", "users.StatusID", "status.StatusID")
       .join("userdetails", "users.UserID", "userdetails.UserID")
+      .join("userroles", "users.UserID", "userroles.UserID")
       .where("users.username", username)
       .first();
 
@@ -142,8 +148,13 @@ async function getUsers(page) {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
 
     const users = await knex("users")
-      .select("users.*", "status.StatusName as StatusName")
+      .select(
+        "users.*",
+        "status.StatusName as StatusName",
+        "userroles.RoleID as RoleID"
+      )
       .join("status", "users.StatusID", "status.StatusID")
+      .join("userroles", "users.UserID", "userroles.UserID")
       .limit(itemsPerPage)
       .offset(offset);
 
