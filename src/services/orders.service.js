@@ -31,33 +31,26 @@ async function placeOrder(userID, products, paymentMethodID) {
         );
       }
 
-      // Tính tổng giá trị cho từng sản phẩm
       const productTotalPrice = productInfo.Price * quantity;
       totalPrice += productTotalPrice;
 
-      // Thêm sản phẩm vào bảng invoices
       await knex("invoices").insert({
         OrderID: order[0],
         ProductID: product.ProductID,
         Quantity: product.Quantity,
         UnitPrice: productInfo.Price,
         TotalPrice: productTotalPrice,
-        SellerUserID: productInfo.SellerUserID, // Sử dụng SellerUserID của sản phẩm
+        SellerUserID: productInfo.SellerUserID,
       });
 
-      // Giảm số lượng sản phẩm trong kho
       await knex("products")
         .where("ProductID", product.ProductID)
         .decrement("quantity", product.Quantity);
     }
 
-    // Thêm giao dịch vào bảng transactions
-    // Ở đây, giả sử nếu có nhiều SellerUserID khác nhau, bạn có thể chọn SellerUserID của sản phẩm đầu tiên trong danh sách.
-    const sellerUserID = products[0].SellerUserID;
     await knex("transactions").insert({
       OrderID: order[0],
       BuyerUserID: userID,
-      SellerUserID: sellerUserID,
       PaymentMethodID: paymentMethodID,
       Amount: totalPrice,
     });
