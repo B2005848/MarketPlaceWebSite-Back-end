@@ -1,31 +1,26 @@
 const ApiError = require("../api-error");
-const oderService = require("../services/oders.service");
+const orderService = require("../services/orders.service");
 
-async function order(req, res, next) {
+async function placeOrder(req, res, next) {
   try {
-    const usernameData = req.body.username;
-    const orderData = {
-      Status: "pending",
-    };
+    const userID = req.body.userID;
+    const products = req.body.products;
+    const paymentMethodID = req.body.paymentMethodID;
 
-    const invoiceData = {
-      productID: req.body.productID,
-      quantity: req.body.quantity,
-      unitPrice: req.body.unitPrice,
-      totalPrice: req.body.totalPrice,
-    };
-
-    const order = await oderService.oderProducts(
-      usernameData,
-      orderData,
-      invoiceData
+    const order = await orderService.placeOrder(
+      userID,
+      products,
+      paymentMethodID
     );
-    return res.status(201).json(order);
+
+    res.status(201).json({ message: "Order placed successfully", order });
   } catch (error) {
-    console.log(error);
-    return next(new ApiError(500, "An error occurred while creating the oder"));
+    console.error(error);
+
+    next(new ApiError(500, "An error occurred while creating the order"));
   }
 }
+
 module.exports = {
-  order,
+  placeOrder,
 };

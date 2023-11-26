@@ -155,6 +155,9 @@ async function getUsers(page) {
       )
       .join("status", "users.StatusID", "status.StatusID")
       .join("userroles", "users.UserID", "userroles.UserID")
+      .where(function () {
+        this.where("RoleID", "Cus").orWhere("RoleID", "Se");
+      })
       .limit(itemsPerPage)
       .offset(offset);
 
