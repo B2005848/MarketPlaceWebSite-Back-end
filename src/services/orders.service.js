@@ -26,11 +26,11 @@ async function placeOrder(userID, products, paymentMethodID) {
       }
 
       if (productInfo.Quantity < quantity) {
+        console.log("Quantity have only:", productInfo.Quantity);
         throw new Error(
           `Not enough quantity in stock for product with ID ${productID}`
         );
       }
-
       const productTotalPrice = productInfo.Price * quantity;
       totalPrice += productTotalPrice;
 
