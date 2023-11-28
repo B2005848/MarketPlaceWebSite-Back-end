@@ -23,7 +23,7 @@ async function placeOrder(req, res, next) {
 
 async function detailOrder(req, res, next) {
   try {
-    const orderID = req.body.orderID;
+    const orderID = req.body.orderID || req.params.orderID;
 
     const detailOrderData = await orderService.detailOrder(orderID);
 

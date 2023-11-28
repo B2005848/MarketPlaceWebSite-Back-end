@@ -8,6 +8,7 @@ const router = express.Router();
 // orders
 router.post("/orders/create", OrdersController.placeOrder);
 router.get("/orders/details", OrdersController.detailOrder);
+router.get("/orders/details/:orderID", OrdersController.detailOrder);
 
 router.post("/create", ProductsController.createProduct);
 
