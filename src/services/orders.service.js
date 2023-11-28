@@ -61,6 +61,21 @@ async function placeOrder(userID, products, paymentMethodID) {
   }
 }
 
+async function detailOrder(orderID) {
+  try {
+    const detailOrderData = await knex("orders")
+      .select("orders.*", "invoices.*", "transactions.*")
+      .join("invoices", "orders.OrderID", "invoices.OrderID")
+      .join("transactions", "transactions.OrderID", "orders.OrderID")
+      .where("orders.OrderID", orderID);
+
+    return detailOrderData;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   placeOrder,
+  detailOrder,
 };

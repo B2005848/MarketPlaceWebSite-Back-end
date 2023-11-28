@@ -21,6 +21,23 @@ async function placeOrder(req, res, next) {
   }
 }
 
+async function detailOrder(req, res, next) {
+  try {
+    const orderID = req.body.orderID;
+
+    const detailOrderData = await orderService.detailOrder(orderID);
+
+    res
+      .status(201)
+      .json({ message: "Order placed successfully", detailOrderData });
+  } catch (error) {
+    console.error(error);
+
+    next(new ApiError(500, "An error occurred while creating the order"));
+  }
+}
+
 module.exports = {
   placeOrder,
+  detailOrder,
 };
