@@ -227,4 +227,5 @@ module.exports = {
   getUserByUsername,
   updateUser,
   deleteUser,
+  changepassword,
 };
