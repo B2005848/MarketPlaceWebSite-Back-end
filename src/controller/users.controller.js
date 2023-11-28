@@ -197,6 +197,28 @@ async function deleteUser(req, res, next) {
   }
 }
 
+async function changepassword(req, res, next) {
+  const oldpasswd = req.body.oldpasswd;
+  const newpasswd = req.body.newpasswd;
+  try {
+    const delete_user = await userService.deleteUser(username);
+    if (delete_user) {
+      return res.json({
+        message: `Delete success user with username: ${username}`,
+      });
+    } else {
+      return next(new ApiError(404, `username: ${username} does not exist`));
+    }
+  } catch (error) {
+    console.log(error);
+    return next(
+      new ApiError(
+        500,
+        `An error occurred while deleting user with username: ${username}`
+      )
+    );
+  }
+}
 module.exports = {
   checkuserlogin,
   checkadminlogin,
