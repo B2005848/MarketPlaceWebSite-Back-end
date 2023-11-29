@@ -46,8 +46,7 @@ async function getAllProducts(page) {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
 
     const products = await knex("products")
-      .select("products.*", "users.username as username")
-      .join("users", "users.UserID", "Products.SellerUserID")
+      .select("products.*")
       .limit(itemsPerPage)
       .offset(offset);
 

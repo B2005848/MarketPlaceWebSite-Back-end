@@ -2,25 +2,10 @@ const productService = require("../services/products.service");
 const ApiError = require("../api-error");
 
 async function createProduct(req, res) {
-  const {
-    Name,
-    Description,
-    Price,
-    Quantity,
-    CategoryID,
-    SellerUserID,
-    ImageURL,
-  } = req.body;
+  const { Name, Description, Price, Quantity, CategoryID } = req.body;
 
   // Validate the presence of required fields
-  if (
-    !Name ||
-    !Price ||
-    !Quantity ||
-    !CategoryID ||
-    !SellerUserID ||
-    !ImageURL
-  ) {
+  if (!Name || !Price || !Quantity || !CategoryID) {
     return res.status(400).json({ message: "All fields are required." });
   }
 
@@ -31,8 +16,6 @@ async function createProduct(req, res) {
       Price,
       Quantity,
       CategoryID,
-      SellerUserID,
-      ImageURL,
     };
 
     const insertedProduct = await productService.createProduct(productData);
@@ -78,9 +61,8 @@ async function getAllProducts(req, res, next) {
   try {
     const page = parseInt(req.query.page) || 1;
 
-    const { products, totalPages, username } =
-      await productService.getAllProducts(page);
-    return res.json({ products, username, totalPages });
+    const { products, totalPages } = await productService.getAllProducts(page);
+    return res.json({ products, totalPages });
   } catch (error) {
     console.error(error);
     return next(new ApiError(500, "An error while getting all users"));
