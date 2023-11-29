@@ -153,12 +153,11 @@ async function getUsers(page) {
         "status.StatusName as StatusName",
         "userroles.RoleID as RoleID"
       )
-      .join("status", "users.StatusID", "status.StatusID")
-      .join("userroles", "users.UserID", "userroles.UserID")
-      .where("RoleID", "Cus")
+      .leftJoin("status", "users.StatusID", "status.StatusID")
+      .leftJoin("userroles", "users.UserID", "userroles.UserID")
+      .where("userroles.RoleID", "Cus")
       .limit(itemsPerPage)
       .offset(offset);
-
     console.log("Get list user success:");
     console.log(users);
 

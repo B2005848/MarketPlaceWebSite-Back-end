@@ -40,7 +40,6 @@ async function placeOrder(userID, products, paymentMethodID) {
         Quantity: product.Quantity,
         UnitPrice: productInfo.Price,
         TotalPrice: productTotalPrice,
-        SellerUserID: productInfo.SellerUserID,
       });
 
       await knex("products")
