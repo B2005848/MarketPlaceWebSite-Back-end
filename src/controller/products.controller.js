@@ -72,41 +72,12 @@ async function getAllProducts(req, res, next) {
 async function updateProduct(req, res) {
   const productId = parseInt(req.params.id);
 
-  // Kiểm tra xem productId có phải là một số hợp lệ hay không
-  if (isNaN(productId)) {
-    console.log("Invalid productId");
-    return res.status(400).json({ message: "Invalid productId" });
-  }
-
   try {
-    const { Name, Quantity, Description, Price, ImageURL } = req.body;
-
-    // Kiểm tra xem các trường có giá trị hay không
-    if (!Name || !Quantity || !Description || !Price || !ImageURL) {
-      console.log("Missing required fields");
-      return res.status(400).json({ message: "Missing required fields" });
-    }
-
-    // In ra console nếu productId và các trường khác đều hợp lệ
-    console.log(
-      "Valid productId and all required fields:",
-      productId,
-      Name,
-      Quantity,
-      Description,
-      Price,
-      ImageURL
-    );
+    const data = ({ Name, CategoryID, Quantity, Description, Price, ImageURL } =
+      req.body);
 
     // Gọi hàm updateProduct từ productService
-    const updatedProduct = await productService.updateProduct(
-      productId,
-      Name,
-      Quantity,
-      Description,
-      Price,
-      ImageURL
-    );
+    const updatedProduct = await productService.updateProduct(productId, data);
 
     // Kiểm tra xem có sản phẩm được cập nhật thành công hay không
     if (updatedProduct) {

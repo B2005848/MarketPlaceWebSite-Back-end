@@ -46,7 +46,8 @@ async function getAllProducts(page) {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
 
     const products = await knex("products")
-      .select("products.*")
+      .select("products.*", "images.ImageURL")
+      .leftJoin("images", "images.ProductID", "=", "products.ProductID")
       .limit(itemsPerPage)
       .offset(offset);
 
@@ -60,38 +61,12 @@ async function getAllProducts(page) {
   }
 }
 
-async function updateProduct(
-  productId,
-  name,
-  quantity,
-  description,
-  price,
-  imageURL
-) {
+async function updateProduct(productID, data) {
   try {
-    // Kiểm tra xem sản phẩm có tồn tại không
-    const existingProduct = await knex("products")
-      .select("ProductID")
-      .where("ProductID", "like", `%${productId}%`);
-
-    if (!existingProduct) {
-      console.log("Product does not exist");
-      return null;
-    }
-
-    const updatedData = {
-      Name: name,
-      Quantity: quantity,
-      Description: description,
-      Price: price,
-      ImageURL: imageURL,
-      // Các trường khác nếu cần
-    };
-
-    await knex("products").where("ProductID", productId).update(updatedData);
-    console.log("Received data:", updatedData);
-    console.log(`Update product details for ProductID ${productId} success`);
-    return productId, updatedData;
+    await knex("products").where("ProductID", productID).update(data);
+    console.log("Received data:", data);
+    console.log(`Update product details for ProductID ${productID} success`);
+    return productID, data;
   } catch (error) {
     console.log("An error occurred while updating product details", error);
     throw error;
