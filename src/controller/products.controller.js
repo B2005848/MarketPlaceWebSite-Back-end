@@ -69,32 +69,34 @@ async function getAllProducts(req, res, next) {
   }
 }
 
+// productController.js
 async function updateProduct(req, res) {
-  const productId = parseInt(req.params.id);
+  const VariantID = req.params.id; // Nếu ID là VariantID, bạn có thể giữ nguyên hoặc điều chỉnh tùy theo cấu trúc cơ sở dữ liệu của bạn
 
   try {
-    const data = ({ Name, CategoryID, Quantity, Description, Price, ImageURL } =
-      req.body);
+    const { variantData, productData } = req.body;
 
-    // Gọi hàm updateProduct từ productService
-    const updatedProduct = await productService.updateProduct(productId, data);
+    const updatedProduct = await productService.updateProduct(
+      VariantID,
+      variantData,
+      productData
+    );
 
-    // Kiểm tra xem có sản phẩm được cập nhật thành công hay không
     if (updatedProduct) {
       console.log(
-        `Product with ID ${productId} has been updated successfully.`
+        `Product with VariantID ${VariantID} has been updated successfully.`
       );
-      res.status(201).json({
+      res.status(200).json({
         success: true,
         updateData: updatedProduct,
       });
     } else {
       console.log(
-        `Product with ID ${productId} does not exist or Name is not updated.`
+        `Product with VariantID ${VariantID} does not exist or not updated.`
       );
       res.status(404).json({
         success: false,
-        message: "Product not found or Name is not updated",
+        message: `Product with VariantID ${VariantID} not found or not updated`,
       });
     }
   } catch (error) {

@@ -46,8 +46,13 @@ async function getAllProducts(page) {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
 
     const products = await knex("products")
-      .select("products.*", "images.ImageURL")
-      .leftJoin("images", "images.ProductID", "=", "products.ProductID")
+      .select("products.*", "product_variants.*")
+      .leftJoin(
+        "product_variants",
+        "product_variants.ProductID",
+        "=",
+        "products.ProductID"
+      )
       .limit(itemsPerPage)
       .offset(offset);
 
@@ -61,12 +66,45 @@ async function getAllProducts(page) {
   }
 }
 
-async function updateProduct(productID, data) {
+// productService.js
+async function updateProduct(VariantID, variantData, productData) {
   try {
-    await knex("products").where("ProductID", productID).update(data);
-    console.log("Received data:", data);
-    console.log(`Update product details for ProductID ${productID} success`);
-    return productID, data;
+    // Thay vì sử dụng select(), hãy sử dụng first() để trả về một giá trị đơn
+    const product = await knex("product_variants")
+      .select("productID")
+      .where("VariantID", VariantID)
+      .first();
+
+    if (!product) {
+      console.log(`Product with VariantID ${VariantID} does not exist.`);
+      return null;
+    }
+
+    const productID = product.productID;
+
+    const updateResult = await knex("product_variants")
+      .where("VariantID", VariantID)
+      .update(variantData);
+
+    const updateData = await knex("products")
+      .where("productID", productID)
+      .update(productData);
+
+    if (updateResult > 0 && updateData > 0) {
+      const updatedProduct = await knex("products")
+        .where("ProductID", productID)
+        .first();
+
+      console.log("Received data:", updatedProduct);
+      console.log(`Update product details for ProductID ${productID} success`);
+
+      return updatedProduct;
+    } else {
+      console.log(
+        `Product with ID ${productID} does not exist or not updated.`
+      );
+      return null;
+    }
   } catch (error) {
     console.log("An error occurred while updating product details", error);
     throw error;
