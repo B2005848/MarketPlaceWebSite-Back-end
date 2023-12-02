@@ -66,10 +66,8 @@ async function getAllProducts(page) {
   }
 }
 
-// productService.js
 async function updateProduct(VariantID, variantData, productData) {
   try {
-    // Thay vì sử dụng select(), hãy sử dụng first() để trả về một giá trị đơn
     const product = await knex("product_variants")
       .select("productID")
       .where("VariantID", VariantID)
@@ -94,7 +92,6 @@ async function updateProduct(VariantID, variantData, productData) {
       const updatedProduct = await knex("products")
         .where("ProductID", productID)
         .first();
-
       console.log("Received data:", updatedProduct);
       console.log(`Update product details for ProductID ${productID} success`);
 

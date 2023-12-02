@@ -70,21 +70,53 @@ async function getAllProducts(req, res, next) {
 }
 
 // productController.js
+const fs = require("fs");
+const path = require("path");
+const { promisify } = require("util");
+const writeFileAsync = promisify(fs.writeFile);
+
 async function updateProduct(req, res) {
-  const VariantID = req.params.id; // Nếu ID là VariantID, bạn có thể giữ nguyên hoặc điều chỉnh tùy theo cấu trúc cơ sở dữ liệu của bạn
+  const variantID = req.params.id;
+  const variantData = {
+    Size: req.body.Size,
+    Color: req.body.Color,
+    Price: req.body.Price,
+    ImageURL: req.body.ImageURL,
+  };
+
+  const productData = {
+    Name: req.body.Name,
+    Quantity: req.body.Quantity,
+    CategoryID: req.body.CategoryID,
+    Description: req.body.Description,
+  };
 
   try {
-    const { variantData, productData } = req.body;
+    if (req.body.ImageURL) {
+      const base64Data = req.body.ImageURL.replace(
+        /^data:image\/png;base64,/,
+        ""
+      );
+      const imagePath = path.join(
+        process.cwd(),
+        "uploads",
+        variantData.ImageURL
+      );
+
+      await writeFileAsync(imagePath, base64Data, "base64");
+
+      variantData.ImageURL = `/uploads/${variantData.ImageURL}`;
+    }
 
     const updatedProduct = await productService.updateProduct(
-      VariantID,
+      variantID,
       variantData,
       productData
     );
 
     if (updatedProduct) {
       console.log(
-        `Product with VariantID ${VariantID} has been updated successfully.`
+        `Product with VariantID ${variantID} has been updated successfully.`
       );
       res.status(200).json({
         success: true,
@@ -92,11 +124,11 @@ async function updateProduct(req, res) {
       });
     } else {
       console.log(
-        `Product with VariantID ${VariantID} does not exist or not updated.`
+        `Product with VariantID ${variantID} does not exist or not updated.`
       );
       res.status(404).json({
         success: false,
-        message: `Product with VariantID ${VariantID} not found or not updated`,
+        message: `Product with VariantID ${variantID} not found or not updated`,
       });
     }
   } catch (error) {
