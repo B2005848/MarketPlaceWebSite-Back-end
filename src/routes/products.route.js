@@ -4,8 +4,7 @@ const ProductsController = require("../controller/products.controller");
 const OrdersController = require("../controller/oders.controller");
 
 const router = express.Router();
-const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
+
 // orders
 router.post("/orders/create", OrdersController.placeOrder);
 router.get("/orders/details", OrdersController.detailOrder);

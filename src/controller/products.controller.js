@@ -72,51 +72,49 @@ async function getAllProducts(req, res, next) {
 // productController.js
 const fs = require("fs");
 const path = require("path");
-const { promisify } = require("util");
-const writeFileAsync = promisify(fs.writeFile);
 
 async function updateProduct(req, res) {
-  const variantID = req.params.id;
+  const VariantID = req.params.id;
   const variantData = {
+    ImageURL: req.body.ImageURL,
     Size: req.body.Size,
     Color: req.body.Color,
     Price: req.body.Price,
-    ImageURL: req.body.ImageURL,
   };
 
   const productData = {
     Name: req.body.Name,
     Quantity: req.body.Quantity,
-    CategoryID: req.body.CategoryID,
     Description: req.body.Description,
   };
 
-  try {
-    if (req.body.ImageURL) {
-      const base64Data = req.body.ImageURL.replace(
-        /^data:image\/png;base64,/,
-        ""
-      );
-      const imagePath = path.join(
-        process.cwd(),
-        "uploads",
-        variantData.ImageURL
-      );
+  if (req.body.ImageURL) {
+    try {
+      const imageFileName = path.basename(req.body.ImageURL);
+      const imagePath = path.join(__dirname, "../uploads", imageFileName);
 
-      await writeFileAsync(imagePath, base64Data, "base64");
+      const imageBase64 = req.body.ImageURL.split(";base64,").pop();
+      fs.writeFileSync(imagePath, Buffer.from(imageBase64, "base64"));
+      console.log(`Image saved to: ${imagePath}`);
 
-      variantData.ImageURL = `/uploads/${variantData.ImageURL}`;
+      // Cập nhật đường dẫn hình ảnh trong variantData
+      variantData.ImageURL = imageFileName;
+    } catch (error) {
+      console.error("Error saving image:", error);
+      return res.status(500).json({ message: "Internal Server Error" });
     }
+  }
 
+  try {
     const updatedProduct = await productService.updateProduct(
-      variantID,
+      VariantID,
       variantData,
       productData
     );
 
     if (updatedProduct) {
       console.log(
-        `Product with VariantID ${variantID} has been updated successfully.`
+        `Product with VariantID ${VariantID} has been updated successfully.`
       );
       res.status(200).json({
         success: true,
@@ -124,11 +122,11 @@ async function updateProduct(req, res) {
       });
     } else {
       console.log(
-        `Product with VariantID ${variantID} does not exist or not updated.`
+        `Product with VariantID ${VariantID} does not exist or not updated.`
       );
       res.status(404).json({
         success: false,
-        message: `Product with VariantID ${variantID} not found or not updated`,
+        message: `Product with VariantID ${VariantID} not found or not updated`,
       });
     }
   } catch (error) {

@@ -21,7 +21,7 @@ app.get("/", (req, res) => {
     message: "Welcome to my project ",
   });
 });
-app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/users", userRouter);
 app.use("/api/products", producRouter);
