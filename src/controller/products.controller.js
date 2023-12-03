@@ -1,28 +1,74 @@
 const productService = require("../services/products.service");
 const ApiError = require("../api-error");
+const fs = require("fs");
+const path = require("path");
 
-async function createProduct(req, res) {
-  const { Name, Description, Price, Quantity, CategoryID } = req.body;
+async function createProducts(req, res) {
+  const productsData = req.body;
 
   // Validate the presence of required fields
-  if (!Name || !Price || !Quantity || !CategoryID) {
-    return res.status(400).json({ message: "All fields are required." });
+  if (!Array.isArray(productsData) || productsData.length === 0) {
+    return res.status(400).json({ message: "Invalid product data." });
   }
 
   try {
-    const productData = {
-      Name,
-      Description,
-      Price,
-      Quantity,
-      CategoryID,
-    };
+    // Validate each product in the array
+    for (const product of productsData) {
+      if (!product.Name || !product.CategoryID) {
+        return res.status(400).json({ message: "All fields are required." });
+      }
+    }
 
-    const insertedProduct = await productService.createProduct(productData);
+    const insertedProducts = await productService.createProduct(productsData);
     res.status(201).json({
       message: "Successfully added",
-      product: productData,
-      productID: insertedProduct,
+      products: productsData,
+      insertedProductIDs: insertedProducts,
+    });
+  } catch (error) {
+    console.error(error);
+
+    if (error.message.includes("unique constraint")) {
+      res
+        .status(400)
+        .json({ message: "Duplicate record. Some products already exist." });
+    } else {
+      res
+        .status(500)
+        .json({ message: "Internal Server Error", error: error.message });
+    }
+  }
+}
+
+async function createVariantProduct(req, res) {
+  const variantData = {
+    ProductID: req.params.id,
+    Size: req.body.Size,
+    Material: req.body.Material,
+    ImageURL: req.body.ImageURL,
+    Quantity: req.body.Quantity,
+    Price: req.body.Price,
+    Description: req.body.Description,
+  };
+
+  try {
+    const imageFileName = path.basename(req.body.ImageURL);
+    const imagePath = path.join(__dirname, "../uploads", imageFileName);
+
+    if (fs.existsSync(imagePath)) {
+      res.status(400).json({ message: "Lỗi ." });
+      return;
+    }
+
+    const imageBase64 = req.body.ImageURL.split(";base64,").pop();
+    fs.writeFileSync(imagePath, Buffer.from(imageBase64, "base64"));
+
+    variantData.ImageURL = imageFileName;
+
+    await productService.createVariantProduct(variantData);
+    res.status(201).json({
+      message: "Successfully added",
+      product: variantData,
     });
   } catch (error) {
     console.error(error);
@@ -38,6 +84,7 @@ async function createProduct(req, res) {
     }
   }
 }
+
 async function getProductByName(req, res) {
   const productName = req.body.name || req.params.name;
 
@@ -55,8 +102,36 @@ async function getProductByName(req, res) {
   }
 }
 
-// Assume productService is imported and initialized correctly
+async function getVariantProducts(req, res, next) {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const productID = req.params.id;
+    const { products, totalPages } = await productService.getVariantProducts(
+      page,
+      productID
+    );
+    return res.json({ products, totalPages });
+  } catch (error) {
+    console.error(error);
+    return next(new ApiError(500, "An error while getting all products"));
+  }
+}
 
+// ADMIN PAGE
+async function getAllProductsAdmin(req, res, next) {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const { products, totalPages } = await productService.getAllProductsAdmin(
+      page
+    );
+    return res.json({ products, totalPages });
+  } catch (error) {
+    console.error(error);
+    return next(new ApiError(500, "An error while getting all products"));
+  }
+}
+
+// USER PAGE
 async function getAllProducts(req, res, next) {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -65,14 +140,11 @@ async function getAllProducts(req, res, next) {
     return res.json({ products, totalPages });
   } catch (error) {
     console.error(error);
-    return next(new ApiError(500, "An error while getting all users"));
+    return next(new ApiError(500, "An error while getting all products"));
   }
 }
 
 // productController.js
-const fs = require("fs");
-const path = require("path");
-
 async function updateProduct(req, res) {
   const VariantID = req.params.id;
   const variantData = {
@@ -148,9 +220,12 @@ async function deleteProduct(req, res) {
 }
 
 module.exports = {
+  getAllProductsAdmin,
   getAllProducts,
+  createVariantProduct,
   getProductByName,
-  createProduct,
+  getVariantProducts,
+  createProducts,
   deleteProduct,
   updateProduct,
 };

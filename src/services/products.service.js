@@ -15,6 +15,20 @@ async function createProduct(productData) {
   }
 }
 
+async function createVariantProduct(variantData) {
+  try {
+    const product = await knex("product_variants").insert(variantData);
+
+    if (product) {
+      return product;
+    } else {
+      console.log("ERROR!!!:");
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
 // sort/ find product with name
 async function getProductByName(name) {
   try {
@@ -34,6 +48,65 @@ async function getProductByName(name) {
   }
 }
 
+async function getVariantProducts(page, productID) {
+  try {
+    const itemsPerPage = 12;
+    const offset = (page - 1) * itemsPerPage;
+
+    const totalProducts = await knex("product_variants")
+      .count("* as totalCount")
+      .where("ProductID", productID)
+      .first();
+    const totalItems = totalProducts.totalCount;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    const products = await knex("product_variants")
+      .select("product_variants.*", "products.Name as productname")
+      .leftJoin(
+        "products",
+        "products.ProductID",
+        "=",
+        "product_variants.ProductID"
+      )
+      .where("product_variants.ProductID", productID)
+      .limit(itemsPerPage)
+      .offset(offset);
+
+    console.log("Get list of product variants success:");
+    console.log(products);
+
+    return { products, totalPages };
+  } catch (error) {
+    console.log("Get list of product variants fail", error);
+    throw error;
+  }
+}
+
+// for admin page
+async function getAllProductsAdmin(page) {
+  try {
+    const itemsPerPage = 10;
+    const offset = (page - 1) * itemsPerPage;
+
+    const totalProducts = await knex("products")
+      .count("* as totalCount")
+      .first();
+    const totalItems = totalProducts.totalCount;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    const products = await knex("products").limit(itemsPerPage).offset(offset);
+
+    console.log("Get list of all products success:");
+    console.log(products);
+
+    return { products, totalPages };
+  } catch (error) {
+    console.log("Get list of all products fail", error);
+    throw error;
+  }
+}
+
+// for user page
 async function getAllProducts(page) {
   try {
     const itemsPerPage = 12;
@@ -142,8 +215,11 @@ async function deleteProduct(productId) {
 
 module.exports = {
   createProduct,
+  createVariantProduct,
   getProductByName,
+  getAllProductsAdmin,
   getAllProducts,
+  getVariantProducts,
   updateProduct,
   deleteProduct,
 };
