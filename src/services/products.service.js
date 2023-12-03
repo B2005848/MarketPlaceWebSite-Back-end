@@ -48,6 +48,7 @@ async function getProductByName(name) {
   }
 }
 
+// get variantion of products by productID
 async function getVariantProducts(page, productID) {
   try {
     const itemsPerPage = 12;
@@ -106,22 +107,22 @@ async function getAllProductsAdmin(page) {
   }
 }
 
-// for user page
+// get all products for users
 async function getAllProducts(page) {
   try {
     const itemsPerPage = 12;
     const offset = (page - 1) * itemsPerPage;
 
-    const totalProducts = await knex("products")
+    const totalProducts = await knex("product_variants")
       .count("* as totalCount")
       .first();
     const totalItems = totalProducts.totalCount;
     const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-    const products = await knex("products")
-      .select("products.*", "product_variants.*")
+    const products = await knex("product_variants")
+      .select("products.Name as productname", "product_variants.*")
       .leftJoin(
-        "product_variants",
+        "products",
         "product_variants.ProductID",
         "=",
         "products.ProductID"
@@ -138,7 +139,6 @@ async function getAllProducts(page) {
     throw error;
   }
 }
-
 async function updateProduct(VariantID, variantData, productData) {
   try {
     const product = await knex("product_variants")

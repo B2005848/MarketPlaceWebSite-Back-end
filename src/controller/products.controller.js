@@ -131,19 +131,6 @@ async function getAllProductsAdmin(req, res, next) {
   }
 }
 
-// USER PAGE
-async function getAllProducts(req, res, next) {
-  try {
-    const page = parseInt(req.query.page) || 1;
-
-    const { products, totalPages } = await productService.getAllProducts(page);
-    return res.json({ products, totalPages });
-  } catch (error) {
-    console.error(error);
-    return next(new ApiError(500, "An error while getting all products"));
-  }
-}
-
 // productController.js
 async function updateProduct(req, res) {
   const VariantID = req.params.id;
@@ -219,6 +206,18 @@ async function deleteProduct(req, res) {
   }
 }
 
+// USER PAGE
+async function getAllProducts(req, res, next) {
+  try {
+    const page = parseInt(req.query.page) || 1;
+
+    const { products, totalPages } = await productService.getAllProducts(page);
+    return res.json({ products, totalPages });
+  } catch (error) {
+    console.error(error);
+    return next(new ApiError(500, "An error while getting all products"));
+  }
+}
 module.exports = {
   getAllProductsAdmin,
   getAllProducts,
