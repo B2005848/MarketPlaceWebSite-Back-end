@@ -116,7 +116,7 @@ async function updateProduct(req, res) {
       console.log(
         `Product with VariantID ${VariantID} has been updated successfully.`
       );
-      res.status(200).json({
+      res.status(201).json({
         success: true,
         updateData: updatedProduct,
       });
