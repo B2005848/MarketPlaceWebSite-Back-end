@@ -26,7 +26,7 @@ async function detailOrder(req, res, next) {
     const orderID = req.body.orderID || req.params.orderID;
 
     const detailOrderData = await orderService.detailOrder(orderID);
-
+    console.log(detailOrderData);
     res
       .status(201)
       .json({ message: "Order placed successfully", detailOrderData });
