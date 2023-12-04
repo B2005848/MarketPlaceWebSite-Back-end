@@ -120,7 +120,11 @@ async function getAllProducts(page) {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
 
     const products = await knex("product_variants")
-      .select("products.Name as productname", "product_variants.*")
+      .select(
+        "products.Name as productname",
+        "product_variants.*",
+        "products.CategoryID"
+      )
       .leftJoin(
         "products",
         "product_variants.ProductID",

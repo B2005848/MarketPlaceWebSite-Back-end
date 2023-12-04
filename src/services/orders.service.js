@@ -16,9 +16,11 @@ async function placeOrder(userID, products, paymentMethodID) {
 
     for (const product of products) {
       const productID = product.ProductID;
+      const variantID = product.VariantID;
+      console.log(product.variantID);
       const quantity = product.Quantity;
-      const productInfo = await knex("products")
-        .where("ProductID", productID)
+      const productInfo = await knex("product_variants")
+        .where("VariantID", product.VariantID)
         .first();
 
       if (!productInfo) {
@@ -40,11 +42,12 @@ async function placeOrder(userID, products, paymentMethodID) {
         Quantity: product.Quantity,
         UnitPrice: productInfo.Price,
         TotalPrice: productTotalPrice,
+        variantID: variantID,
       });
 
-      await knex("products")
-        .where("ProductID", product.ProductID)
-        .decrement("quantity", product.Quantity);
+      await knex("product_variants")
+        .where("VariantID", variantID)
+        .decrement("Quantity", quantity);
     }
 
     await knex("transactions").insert({
