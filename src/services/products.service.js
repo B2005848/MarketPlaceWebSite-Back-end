@@ -95,7 +95,11 @@ async function getAllProductsAdmin(page) {
     const totalItems = totalProducts.totalCount;
     const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-    const products = await knex("products").limit(itemsPerPage).offset(offset);
+    const products = await knex("products")
+      .select("products.*", "categories.CategoryName as CategoryName")
+      .leftJoin("Categories", "Categories.CategoryID", "products.CategoryID")
+      .limit(itemsPerPage)
+      .offset(offset);
 
     console.log("Get list of all products success:");
     console.log(products);
