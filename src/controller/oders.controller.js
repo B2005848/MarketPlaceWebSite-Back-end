@@ -4,11 +4,13 @@ const orderService = require("../services/orders.service");
 async function placeOrder(req, res, next) {
   try {
     const userID = req.body.userID;
+    const numberPhone = req.body.Phone;
     const products = req.body.products;
     const paymentMethodID = req.body.paymentMethodID;
 
     const order = await orderService.placeOrder(
       userID,
+      numberPhone,
       products,
       paymentMethodID
     );

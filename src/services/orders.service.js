@@ -1,6 +1,6 @@
 const knex = require("./knexConfig");
 
-async function placeOrder(userID, products, paymentMethodID) {
+async function placeOrder(userID, numberPhone, products, paymentMethodID) {
   try {
     if (!products || products.length === 0) {
       throw new Error("Empty product list");
@@ -38,6 +38,7 @@ async function placeOrder(userID, products, paymentMethodID) {
 
       await knex("invoices").insert({
         OrderID: order[0],
+        Phone: numberPhone,
         ProductID: product.ProductID,
         Quantity: product.Quantity,
         UnitPrice: productInfo.Price,
@@ -75,24 +76,9 @@ async function getAllOrder(page) {
     // Math.ceil lam tron
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     const OrderData = await knex("orders")
-      .select(
-        "orders.*",
-        "invoices.*",
-        "invoices.Quantity as Quantityofin",
-        "transactions.*",
-        "product_variants.*",
-        "products.Name as productname",
-        "users.username as username"
-      )
-      .join("invoices", "orders.OrderID", "invoices.OrderID")
-      .join("transactions", "transactions.OrderID", "orders.OrderID")
-      .join(
-        "product_variants",
-        "product_variants.VariantID",
-        "invoices.VariantID"
-      )
-      .leftJoin("products", "products.productID", "product_variants.ProductID")
-      .leftJoin("users", "users.UserID", "orders.UserID")
+      .select("orders.*", "users.username as username")
+
+      .join("users", "users.UserID", "orders.UserID")
       .limit(itemsPerPage)
       .offset(offset);
     return { OrderData, totalPages };
