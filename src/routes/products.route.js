@@ -9,6 +9,7 @@ const router = express.Router();
 router.post("/orders/create", OrdersController.placeOrder);
 router.get("/orders/details", OrdersController.detailOrder);
 router.get("/orders/details/:orderID", OrdersController.detailOrder);
+router.get("/orders", OrdersController.getAllOrder);
 
 router.post("/create", ProductsController.createProducts);
 router.post("/create-variants/:id", ProductsController.createVariantProduct);
@@ -20,8 +21,9 @@ router.get("/getAllProducts", ProductsController.getAllProducts);
 router.get("/getAllProductsAdmin", ProductsController.getAllProductsAdmin);
 
 router.get("/getVariantProduct/:id", ProductsController.getVariantProducts);
+router.get("/ProductVariant/:id", ProductsController.getproductVariant);
 
-router.put("/updateProduct/:id", ProductsController.updateProduct);
+router.put("/updateVarProduct/:id", ProductsController.updateVarProduct);
 
 router.delete("/deleteProduct/:id", ProductsController.deleteProduct);
 

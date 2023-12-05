@@ -9,6 +9,7 @@ router.post("/admin/login", userController.checkadminlogin);
 router.post("/create", userController.createUser);
 
 router.get("/getusers", userController.getUsers);
+router.get("/getALLusers", userController.getALLUsers);
 
 router.get("/getuserbyusername/:username", userController.getUserByUsername);
 router.get("/getuserbyusername/", userController.getUserByUsername);

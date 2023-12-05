@@ -63,16 +63,26 @@ async function placeOrder(userID, products, paymentMethodID) {
   }
 }
 
-async function detailOrder(orderID) {
+// getallorders
+async function getAllOrder(page) {
   try {
-    const detailOrderData = await knex("orders")
+    const itemsPerPage = 12;
+    const offset = (page - 1) * itemsPerPage;
+
+    const totalUsers = await knex("orders").count("* as totalCount").first();
+    const totalItems = totalUsers.totalCount;
+
+    // Math.ceil lam tron
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const OrderData = await knex("orders")
       .select(
         "orders.*",
         "invoices.*",
         "invoices.Quantity as Quantityofin",
         "transactions.*",
         "product_variants.*",
-        "products.Name as productname"
+        "products.Name as productname",
+        "users.username as username"
       )
       .join("invoices", "orders.OrderID", "invoices.OrderID")
       .join("transactions", "transactions.OrderID", "orders.OrderID")
@@ -82,6 +92,36 @@ async function detailOrder(orderID) {
         "invoices.VariantID"
       )
       .leftJoin("products", "products.productID", "product_variants.ProductID")
+      .leftJoin("users", "users.UserID", "orders.UserID")
+      .limit(itemsPerPage)
+      .offset(offset);
+    return { OrderData, totalPages };
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function detailOrder(orderID) {
+  try {
+    const detailOrderData = await knex("orders")
+      .select(
+        "orders.*",
+        "invoices.*",
+        "invoices.Quantity as Quantityofin",
+        "transactions.*",
+        "product_variants.*",
+        "products.Name as productname",
+        "userdetails.*"
+      )
+      .join("invoices", "orders.OrderID", "invoices.OrderID")
+      .join("transactions", "transactions.OrderID", "orders.OrderID")
+      .join(
+        "product_variants",
+        "product_variants.VariantID",
+        "invoices.VariantID"
+      )
+      .leftJoin("products", "products.productID", "product_variants.ProductID")
+      .leftJoin("userdetails", "userdetails.UserID", "orders.UserID")
       .where("orders.OrderID", orderID);
 
     return detailOrderData;
@@ -92,5 +132,6 @@ async function detailOrder(orderID) {
 
 module.exports = {
   placeOrder,
+  getAllOrder,
   detailOrder,
 };

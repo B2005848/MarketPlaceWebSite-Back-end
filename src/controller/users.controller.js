@@ -140,6 +140,17 @@ async function getUsers(req, res, next) {
   }
 }
 
+async function getALLUsers(req, res, next) {
+  try {
+    const users = await userService.getALLUsers();
+
+    return res.json(users);
+  } catch (error) {
+    console.log(error);
+    return next(new ApiError(500, "An error occurred while fetching users"));
+  }
+}
+
 // Trong users.controller.js
 async function updateUser(req, res, next) {
   const username = req.body.username || req.params.username;
@@ -221,6 +232,7 @@ async function changepassword(req, res, next) {
 }
 module.exports = {
   checkuserlogin,
+  getALLUsers,
   checkadminlogin,
   createUser,
   getUsers,

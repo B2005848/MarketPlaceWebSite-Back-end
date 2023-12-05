@@ -83,6 +83,24 @@ async function getVariantProducts(page, productID) {
   }
 }
 
+// get product_variant by VariantID
+async function getproductVariant(VariantID) {
+  try {
+    const product_variant = await knex("product_variants").where(
+      "VariantID",
+      VariantID
+    );
+
+    console.log("Get success:");
+    console.log(product_variant);
+
+    return product_variant;
+  } catch (error) {
+    console.log("Get list of all products fail", error);
+    throw error;
+  }
+}
+
 // for admin page
 async function getAllProductsAdmin(page) {
   try {
@@ -147,39 +165,27 @@ async function getAllProducts(page) {
     throw error;
   }
 }
-async function updateProduct(VariantID, variantData, productData) {
+
+// update product_variants
+async function updateVarProduct(VariantID, variantData) {
   try {
-    const product = await knex("product_variants")
-      .select("productID")
-      .where("VariantID", VariantID)
-      .first();
-
-    if (!product) {
-      console.log(`Product with VariantID ${VariantID} does not exist.`);
-      return null;
-    }
-
-    const productID = product.productID;
-
     const updateResult = await knex("product_variants")
       .where("VariantID", VariantID)
       .update(variantData);
 
-    const updateData = await knex("products")
-      .where("productID", productID)
-      .update(productData);
-
-    if (updateResult > 0 && updateData > 0) {
-      const updatedProduct = await knex("products")
-        .where("ProductID", productID)
+    if (updateResult > 0) {
+      const updatedProduct = await knex("product_variants")
+        .where("VariantID", VariantID)
         .first();
       console.log("Received data:", updatedProduct);
-      console.log(`Update product details for ProductID ${productID} success`);
+      console.log(
+        `Update product_variants details for VariantID ${VariantID} success`
+      );
 
       return updatedProduct;
     } else {
       console.log(
-        `Product with ID ${productID} does not exist or not updated.`
+        `Product with ID ${VariantID} does not exist or not updated.`
       );
       return null;
     }
@@ -228,6 +234,7 @@ module.exports = {
   getAllProductsAdmin,
   getAllProducts,
   getVariantProducts,
-  updateProduct,
+  getproductVariant,
+  updateVarProduct,
   deleteProduct,
 };

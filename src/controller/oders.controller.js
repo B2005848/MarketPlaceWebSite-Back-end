@@ -21,6 +21,19 @@ async function placeOrder(req, res, next) {
   }
 }
 
+async function getAllOrder(req, res, next) {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const { OrderData, totalPages } = await orderService.getAllOrder(page);
+    console.log(OrderData, totalPages);
+    res.status(201).json({ message: "Order data:", OrderData, totalPages });
+  } catch (error) {
+    console.error(error);
+
+    next(new ApiError(500, "An error occurred while creating the order"));
+  }
+}
+
 async function detailOrder(req, res, next) {
   try {
     const orderID = req.body.orderID || req.params.orderID;
@@ -39,5 +52,6 @@ async function detailOrder(req, res, next) {
 
 module.exports = {
   placeOrder,
+  getAllOrder,
   detailOrder,
 };

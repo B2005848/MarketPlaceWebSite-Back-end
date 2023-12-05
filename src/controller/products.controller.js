@@ -102,6 +102,7 @@ async function getProductByName(req, res) {
   }
 }
 
+// list product_variants
 async function getVariantProducts(req, res, next) {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -111,6 +112,18 @@ async function getVariantProducts(req, res, next) {
       productID
     );
     return res.json({ products, totalPages });
+  } catch (error) {
+    console.error(error);
+    return next(new ApiError(500, "An error while getting all products"));
+  }
+}
+
+// get product_variant by VariantID
+async function getproductVariant(req, res, next) {
+  try {
+    const VariantID = req.params.id;
+    const product_variant = await productService.getproductVariant(VariantID);
+    return res.json(product_variant);
   } catch (error) {
     console.error(error);
     return next(new ApiError(500, "An error while getting all products"));
@@ -132,19 +145,15 @@ async function getAllProductsAdmin(req, res, next) {
 }
 
 // productController.js
-async function updateProduct(req, res) {
+async function updateVarProduct(req, res) {
   const VariantID = req.params.id;
   const variantData = {
-    ImageURL: req.body.ImageURL,
     Size: req.body.Size,
-    Color: req.body.Color,
+    Material: req.body.Material,
+    ImageURL: req.body.ImageURL,
     Price: req.body.Price,
-  };
-
-  const productData = {
-    Name: req.body.Name,
-    Quantity: req.body.Quantity,
     Description: req.body.Description,
+    Quantity: req.body.Quantity,
   };
 
   if (req.body.ImageURL) {
@@ -165,10 +174,9 @@ async function updateProduct(req, res) {
   }
 
   try {
-    const updatedProduct = await productService.updateProduct(
+    const updatedProduct = await productService.updateVarProduct(
       VariantID,
-      variantData,
-      productData
+      variantData
     );
 
     if (updatedProduct) {
@@ -222,9 +230,10 @@ module.exports = {
   getAllProductsAdmin,
   getAllProducts,
   createVariantProduct,
+  getproductVariant,
   getProductByName,
   getVariantProducts,
   createProducts,
   deleteProduct,
-  updateProduct,
+  updateVarProduct,
 };

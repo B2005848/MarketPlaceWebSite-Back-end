@@ -168,6 +168,28 @@ async function getUsers(page) {
   }
 }
 
+async function getALLUsers() {
+  try {
+    const users = await knex("users")
+      .select(
+        "users.*",
+        "status.StatusName as StatusName",
+        "userroles.RoleID as RoleID"
+      )
+      .leftJoin("status", "users.StatusID", "status.StatusID")
+      .leftJoin("userroles", "users.UserID", "userroles.UserID")
+      .where("userroles.RoleID", "Cus");
+
+    console.log("Get list user success:");
+    console.log(users);
+
+    return { users };
+  } catch (error) {
+    console.log("Get list user fail", error);
+    throw error;
+  }
+}
+
 // update user
 async function updateUser(username, userDetailsData) {
   try {
@@ -231,6 +253,7 @@ async function deleteUser(username) {
 
 module.exports = {
   checkuserLogin,
+  getALLUsers,
   checkAdminLogin,
   createUser,
   getUserByUsername,
