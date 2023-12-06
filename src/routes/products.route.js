@@ -10,6 +10,7 @@ router.post("/orders/create", OrdersController.placeOrder);
 router.get("/orders/details", OrdersController.detailOrder);
 router.get("/orders/details/:orderID", OrdersController.detailOrder);
 router.get("/orders", OrdersController.getAllOrder);
+router.put("/orders/details/:orderID", OrdersController.submitOrder);
 
 router.post("/create", ProductsController.createProducts);
 router.post("/create-variants/:id", ProductsController.createVariantProduct);

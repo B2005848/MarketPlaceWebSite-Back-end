@@ -116,8 +116,28 @@ async function detailOrder(orderID) {
   }
 }
 
+async function submitOrder(OrderID, Status) {
+  try {
+    const updatedRows = await knex("orders")
+      .update("Status", Status)
+      .where("OrderID", OrderID);
+    console.log(`OrderID: ${OrderID}, Status: ${Status}`);
+
+    if (updatedRows > 0) {
+      console.log(`update success ${updatedRows} orders.`);
+    } else {
+      console.log(`error updating`);
+    }
+
+    return updatedRows;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   placeOrder,
+  submitOrder,
   getAllOrder,
   detailOrder,
 };

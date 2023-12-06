@@ -52,8 +52,27 @@ async function detailOrder(req, res, next) {
   }
 }
 
+async function submitOrder(req, res, next) {
+  try {
+    const orderID = req.body.orderID || req.params.orderID;
+    const status = req.body.Status;
+
+    const data = await orderService.submitOrder(orderID, status);
+    console.log(data);
+
+    res
+      .status(201)
+      .json({ message: "Order updated successfully", updatedStatus: status });
+  } catch (error) {
+    console.error(error);
+
+    next(new ApiError(500, "An error occurred while updating the order"));
+  }
+}
+
 module.exports = {
   placeOrder,
   getAllOrder,
+  submitOrder,
   detailOrder,
 };
