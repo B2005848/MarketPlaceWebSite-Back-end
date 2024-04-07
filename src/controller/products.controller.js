@@ -55,10 +55,10 @@ async function createVariantProduct(req, res) {
     const imageFileName = path.basename(req.body.ImageURL);
     const imagePath = path.join(__dirname, "../uploads", imageFileName);
 
-    if (fs.existsSync(imagePath)) {
-      res.status(400).json({ message: "Lỗi ." });
-      return;
-    }
+    // if (fs.existsSync(imagePath)) {
+    //   res.status(400).json({ message: "Lỗi ." });
+    //   return;
+    // }
 
     const imageBase64 = req.body.ImageURL.split(";base64,").pop();
     fs.writeFileSync(imagePath, Buffer.from(imageBase64, "base64"));

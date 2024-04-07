@@ -3,7 +3,6 @@ const path = require("path");
 const cors = require("cors");
 const userRouter = require("./routes/user.route");
 const producRouter = require("./routes/products.route");
-const catalogRouter = require("./routes/catalog.route");
 const {
   resourceNotFound,
   methodNotAllowed,
@@ -25,7 +24,6 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/users", userRouter);
 app.use("/api/products", producRouter);
-app.use("/api/catagoies", catalogRouter);
 app.use(resourceNotFound);
 app.use(methodNotAllowed);
 app.use(handleError);
