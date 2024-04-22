@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const cors = require("cors");
 const userRouter = require("./routes/user.route");
+const catagories = require("./routes/catagoies.route");
 const producRouter = require("./routes/products.route");
 const {
   resourceNotFound,
@@ -24,6 +25,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/users", userRouter);
 app.use("/api/products", producRouter);
+app.use("/api/catagories", catagories);
 app.use(resourceNotFound);
 app.use(methodNotAllowed);
 app.use(handleError);
